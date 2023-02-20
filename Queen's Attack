@@ -1,0 +1,117 @@
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.regex.*;
+import java.util.stream.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+
+class Result {
+
+    /*
+     * Complete the 'queensAttack' function below.
+     *
+     * The function is expected to return an INTEGER.
+     * The function accepts following parameters:
+     *  1. INTEGER n
+     *  2. INTEGER k
+     *  3. INTEGER r_q
+     *  4. INTEGER c_q
+     *  5. 2D_INTEGER_ARRAY obstacles
+     */
+
+    public static int queensAttack(int n, int k, int r_q, int c_q, List<List<Integer>> obstacles) {
+    // Write your code here
+                int[][] directions = {
+            {1,1}, 
+            {1,0}, 
+            {1,-1}, 
+            {0,-1}, 
+            {-1,-1}, 
+            {-1,0},
+            {-1,1},
+            {0,1}
+        };
+        List<List<Integer>> better = new ArrayList<>();
+        // creates an array with only obstacles that could interfere with queen
+        for(List<Integer> i :obstacles){
+            int rdif = i.get(0)-r_q;
+            int cdif = i.get(1)-c_q;
+            if(rdif==cdif || rdif == -cdif|| rdif == 0 || cdif==0){
+                better.add(i);
+            }
+        }
+        int valid= 0;
+        // loops through 8 directions
+        for(int[] i : directions){ 
+            int tempr = r_q;
+            int tempc = c_q;
+            tempr+=i[0];
+            tempc+=i[1];
+            // loops throught until the place moved to is out of the board
+            while(tempr>0&& tempc>0 && tempr<=n && tempc<=n){
+                valid++;
+                //loops through obstacles that could interfere with queen
+                for(List<Integer> p : better){
+                    //if there is an obstacle, the next direction is started
+                    if(tempr == p.get(0) && tempc == p.get(1)){ 
+                        tempc = n*2;// stops while loop
+                        valid--; 
+                        break;// stops for loop
+                    }
+                }
+                //increment to next step in direction
+                tempr+=i[0];
+                tempc+=i[1];
+
+            }
+        }
+        return valid;
+    }
+
+}
+
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        String[] firstMultipleInput = bufferedReader.readLine().replaceAll("\\s+$", "").split(" ");
+
+        int n = Integer.parseInt(firstMultipleInput[0]);
+
+        int k = Integer.parseInt(firstMultipleInput[1]);
+
+        String[] secondMultipleInput = bufferedReader.readLine().replaceAll("\\s+$", "").split(" ");
+
+        int r_q = Integer.parseInt(secondMultipleInput[0]);
+
+        int c_q = Integer.parseInt(secondMultipleInput[1]);
+
+        List<List<Integer>> obstacles = new ArrayList<>();
+
+        IntStream.range(0, k).forEach(i -> {
+            try {
+                obstacles.add(
+                    Stream.of(bufferedReader.readLine().replaceAll("\\s+$", "").split(" "))
+                        .map(Integer::parseInt)
+                        .collect(toList())
+                );
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        int result = Result.queensAttack(n, k, r_q, c_q, obstacles);
+
+        bufferedWriter.write(String.valueOf(result));
+        bufferedWriter.newLine();
+
+        bufferedReader.close();
+        bufferedWriter.close();
+    }
+}

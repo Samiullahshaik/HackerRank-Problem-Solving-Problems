@@ -1,0 +1,109 @@
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.regex.*;
+import java.util.stream.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+
+class Result {
+
+    /*
+     * Complete the 'biggerIsGreater' function below.
+     *
+     * The function is expected to return a STRING.
+     * The function accepts STRING w as parameter.
+     */
+
+    public static String biggerIsGreater(String w) {
+    // Write your code here
+          if (w.length() == 2) {
+            if (w.charAt(1) > w.charAt(0)) {
+                return String.valueOf(w.charAt(1)) + "" + String.valueOf(w.charAt(0));
+            } else {
+                return "no answer";
+            }
+        } else if (w.length() == 1) {
+            return "no answer";
+        } else {
+            char[] arr = new char[w.length()];
+            for (int i = 0; i < arr.length; i++) {
+                arr[i] = w.charAt(i);
+            }
+            int pivot = -1;
+
+            for (int i = arr.length - 1; i >= 1; i--) {
+                if (arr[i] > arr[i - 1]) {
+                    pivot = i - 1;
+                    break;
+                }
+            }
+
+            if (pivot == -1) {
+                return "no answer";
+            }
+            // a b d c
+            // 1 2 4 3
+            // 
+            for (int i = arr.length - 1; i > pivot; i--) {
+                if (arr[i] > arr[pivot]) {
+                    char temp = arr[i];
+                    arr[i] = arr[pivot];
+                    arr[pivot] = temp;
+                    break;
+                }
+            }
+            int tPivot = pivot + 1;
+            char[] tp = new char[arr.length - pivot - 1];
+            for (int k = 0; k < tp.length; k++) {
+                if (tPivot < arr.length) {
+                    tp[k] = arr[tPivot];
+                    tPivot++;
+                }
+            }
+
+            String res = "";
+            for (int j = 0; j <= pivot; j++) {
+                res += arr[j];
+            }
+
+            for (int l = tp.length - 1; l >= 0; l--) {
+                res += tp[l];
+            }
+            if (!res.equals(w)) {
+                return res;
+            }
+            return "no answer";
+        }
+    }
+
+}
+
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        int T = Integer.parseInt(bufferedReader.readLine().trim());
+
+        IntStream.range(0, T).forEach(TItr -> {
+            try {
+                String w = bufferedReader.readLine();
+
+                String result = Result.biggerIsGreater(w);
+
+                bufferedWriter.write(result);
+                bufferedWriter.newLine();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        bufferedReader.close();
+        bufferedWriter.close();
+    }
+}

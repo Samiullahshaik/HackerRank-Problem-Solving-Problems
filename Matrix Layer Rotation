@@ -1,0 +1,258 @@
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.regex.*;
+import java.util.stream.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+
+class Result {
+
+/*
+ * Complete the 'matrixRotation' function below.
+ *
+ * The function accepts following parameters:
+ *  1. 2D_INTEGER_ARRAY matrix
+ *  2. INTEGER r
+ */
+static class indexHOlder
+{
+    int row;
+    int column;
+} 
+
+public static void matrixRotation(List<List<Integer>> matrix, int r) {
+    // Write your code here
+
+    int row=matrix.size();
+    int column=matrix.get(0).size();
+
+    // make resultant matrix
+
+    int resultantMatrix[][]=new int[row][column];
+
+    // four tracing point
+
+    indexHOlder upperLeft,upperRight,lowerLeft,lowerRight;
+
+    upperLeft=new indexHOlder();
+    upperLeft.row=0;
+    upperLeft.column=0;
+
+    upperRight=new indexHOlder();
+    upperRight.row=0;
+    upperRight.column=column-1;
+
+    lowerLeft=new indexHOlder();
+    lowerLeft.row=row-1;
+    lowerLeft.column=0;
+
+    lowerRight=new indexHOlder();
+    lowerRight.row=row-1;
+    lowerRight.column=column-1;
+
+
+
+    /*
+         |upperLeft      |upperRight
+            |               |
+               |         |
+
+
+               |         |
+            |               |
+         |lowerLeft      |lowerRight
+     */
+
+
+
+    int updatedRow=row,updatedColumn=column;
+
+    while(true)
+    {
+        // condition to check
+        if ( upperLeft.column >= upperRight.column  || lowerLeft.column>=lowerRight.column
+                || upperLeft.row >=lowerLeft.row || upperRight.row>=lowerRight.row
+        )
+        {
+            break;
+        }
+
+        // --------- process  ------------
+
+
+        int arr[]=new int[updatedRow*2 + updatedColumn*2 +1];
+        int index=0;
+
+        // copy from upperLeft to lowerLeft
+        for(int i=upperLeft.row;i<lowerLeft.row;i++)
+        {
+            int element=matrix.get(i).get(upperLeft.column);
+            index++;
+            arr[index]=element;
+        }
+
+        // copy from lowerLeft to lowerRight
+        for(int i=lowerLeft.column;i<lowerRight.column;i++)
+        {
+            int element=matrix.get(lowerLeft.row).get(i);
+            index++;
+            arr[index]=element;
+        }
+
+        // copy from lowerRight to UpperRight
+
+        for(int i=lowerRight.row;i>upperRight.row;i--)
+        {
+            int element=matrix.get(i).get(lowerRight.column);
+            index++;
+            arr[index]=element;
+        }
+
+        // copy from upperRight to upperLeft
+        for(int i=upperRight.column;i>upperLeft.column;i--)
+        {
+            int element=matrix.get(upperRight.row).get(i);
+            index++;
+            arr[index]=element;
+        }
+
+        // 1 indexBased
+        int arrRotated[]=new int[index+1];
+
+        // rotate value in arr
+        for(int i=1;i<=index;i++)
+        {
+            int indexCapture=i+r;
+            // means index exist in arr
+            if(indexCapture<=index)
+            {
+                arrRotated[indexCapture]=arr[i];
+            }
+            else
+            {
+                indexCapture=indexCapture%index;
+                if(indexCapture==0)
+                {
+                    indexCapture=index;
+                }
+                arrRotated[indexCapture]=arr[i];
+            }
+        }
+
+        // put it back where it is in matrix
+
+        int currentIndexCount=0;
+
+        // copying from upperLeft to lowerLeft
+        for(int i=upperLeft.row;i<lowerLeft.row;i++)
+        {
+            currentIndexCount++;
+            int valueToPut=arrRotated[currentIndexCount];
+            // put in resultant matrix
+            resultantMatrix[i][upperLeft.column]=valueToPut;
+        }
+
+        // copying from lowerLeft to lowerRight
+        for(int i=lowerLeft.column;i<lowerRight.column;i++)
+        {
+            currentIndexCount++;
+            int valueToPut=arrRotated[currentIndexCount];
+            // put in matrix
+            resultantMatrix[lowerLeft.row][i]=valueToPut;
+        }
+
+        // copying from lowerRight to upperRight
+        for(int i=lowerRight.row;i>upperRight.row;i--)
+        {
+            currentIndexCount++;
+            int valueToPut=arrRotated[currentIndexCount];
+            resultantMatrix[i][lowerRight.column]=valueToPut;
+        }
+        // copying from upperRight to lowerRight
+        for(int i=upperRight.column;i>upperLeft.column;i--)
+        {
+            currentIndexCount++;
+            int valueToPut=arrRotated[currentIndexCount];
+            resultantMatrix[upperRight.row][i]=valueToPut;
+        }
+
+        //-------------------------
+
+
+        // increment at the end parameter(Upperleft )  with row and column
+
+        updatedRow=updatedRow-2;
+        updatedColumn=updatedColumn-2;
+
+        upperLeft.row++;
+        upperLeft.column++;
+
+        upperRight.row++;
+        upperRight.column--;
+
+        lowerLeft.row--;
+        lowerLeft.column++;
+
+        lowerRight.row--;
+        lowerRight.column--;
+
+
+    }
+
+
+    // print rotated matrix
+    for(int i=0;i<row;i++)
+    {
+        for(int j=0;j<column;j++)
+        {
+            if(j==0)
+            {
+                System.out.print(resultantMatrix[i][j]);    
+            }
+            else
+            {
+                System.out.print(" "+resultantMatrix[i][j]);    
+            }
+        }
+        System.out.println("");
+    }
+}
+}
+
+public class Solution { 
+    public static void main(String[] args) throws IOException { 
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+
+    String[] firstMultipleInput = bufferedReader.readLine().replaceAll("\\s+$", "").split(" ");
+
+    int m = Integer.parseInt(firstMultipleInput[0]);
+
+    int n = Integer.parseInt(firstMultipleInput[1]);
+
+    int r = Integer.parseInt(firstMultipleInput[2]);
+
+    List<List<Integer>> matrix = new ArrayList<>();
+
+    for (int i = 0; i < m; i++) {
+        String[] matrixRowTempItems = bufferedReader.readLine().replaceAll("\\s+$", "").split(" ");
+
+        List<Integer> matrixRowItems = new ArrayList<>();
+
+        for (int j = 0; j < n; j++) {
+            int matrixItem = Integer.parseInt(matrixRowTempItems[j]);
+            matrixRowItems.add(matrixItem);
+        }
+
+        matrix.add(matrixRowItems);
+    }
+
+    Result.matrixRotation(matrix, r);
+
+    bufferedReader.close();
+}
+}

@@ -1,0 +1,55 @@
+import java.io.*;
+import java.math.*;
+import java.security.*;
+import java.text.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.regex.*;
+import java.util.stream.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+
+class Result {
+
+    /*
+     * Complete the 'superReducedString' function below.
+     *
+     * The function is expected to return a STRING.
+     * The function accepts STRING s as parameter.
+     */
+
+    public static String superReducedString(String s) {
+    // Write your code here
+          int counter = 0;
+    while(counter < s.length() ){
+        char a = s.charAt(counter);
+        if(s.length()-1>counter && a==s.charAt(counter+1) ){
+            s = s.substring(0,counter)+s.substring(counter+2);
+            counter = 0;
+        }else if (s.length()-1==counter) break;
+         else  counter++;
+
+
+    }
+    return s.equals("") ? "Empty String":s;
+    }
+
+}
+
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(System.getenv("OUTPUT_PATH")));
+
+        String s = bufferedReader.readLine();
+
+        String result = Result.superReducedString(s);
+
+        bufferedWriter.write(result);
+        bufferedWriter.newLine();
+
+        bufferedReader.close();
+        bufferedWriter.close();
+    }
+}
